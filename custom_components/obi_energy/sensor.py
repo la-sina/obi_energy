@@ -62,9 +62,12 @@ class ObiEnergyBaseEntity(CoordinatorEntity[ObiEnergyCoordinator], SensorEntity)
         super().__init__(coordinator)
         self.entity_description = description
         self._attr_unique_id = f"{entry.entry_id}_{description.key}"
+        # Pin the entity_id (e.g. sensor.obi_energy) so it stays stable and
+        # matches the documented names regardless of the translated name.
+        self._attr_suggested_object_id = f"obi_{description.key}"
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, f"{coordinator.hh_id}_{coordinator.mid_id}")},
-            name="OBI Energy Bridge",
+            name="OBI Energy",
             manufacturer="OBI",
             model="heyOBI Energy Tracking",
         )
@@ -80,7 +83,7 @@ class ObiEnergySensor(ObiEnergyBaseEntity):
             entry,
             SensorEntityDescription(
                 key="energy",
-                name="OBI Energy",
+                translation_key="energy",
                 native_unit_of_measurement=UnitOfEnergy.WATT_HOUR,
                 device_class=SensorDeviceClass.ENERGY,
                 state_class=SensorStateClass.TOTAL_INCREASING,
@@ -109,7 +112,7 @@ class ObiEnergyKwhSensor(ObiEnergyBaseEntity):
             entry,
             SensorEntityDescription(
                 key="energy_kwh",
-                name="OBI Energy kWh",
+                translation_key="energy_kwh",
                 native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
                 device_class=SensorDeviceClass.ENERGY,
                 state_class=SensorStateClass.TOTAL_INCREASING,
@@ -139,7 +142,7 @@ class ObiNegativeEnergySensor(ObiEnergyBaseEntity):
             entry,
             SensorEntityDescription(
                 key="negative_energy",
-                name="OBI Negative Energy",
+                translation_key="negative_energy",
                 native_unit_of_measurement=UnitOfEnergy.WATT_HOUR,
                 device_class=SensorDeviceClass.ENERGY,
                 state_class=SensorStateClass.TOTAL_INCREASING,
@@ -168,7 +171,7 @@ class ObiEinspeisungKwhSensor(ObiEnergyBaseEntity):
             entry,
             SensorEntityDescription(
                 key="einspeisung_kwh",
-                name="OBI Einspeisung kWh",
+                translation_key="einspeisung_kwh",
                 native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
                 device_class=SensorDeviceClass.ENERGY,
                 state_class=SensorStateClass.TOTAL_INCREASING,
@@ -198,7 +201,7 @@ class ObiNettoEnergyKwhSensor(ObiEnergyBaseEntity):
             entry,
             SensorEntityDescription(
                 key="netto_energy_kwh",
-                name="OBI Netto Energy kWh",
+                translation_key="netto_energy_kwh",
                 native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
                 device_class=SensorDeviceClass.ENERGY,
                 state_class=SensorStateClass.TOTAL,
@@ -235,7 +238,7 @@ class ObiBridgeBatterySensor(ObiEnergyBaseEntity):
             entry,
             SensorEntityDescription(
                 key="bridge_battery",
-                name="OBI Bridge Battery",
+                translation_key="bridge_battery",
                 native_unit_of_measurement=PERCENTAGE,
                 device_class=SensorDeviceClass.BATTERY,
                 entity_category=EntityCategory.DIAGNOSTIC,
@@ -264,7 +267,8 @@ class ObiBridgeConnectionStrengthSensor(ObiEnergyBaseEntity):
             entry,
             SensorEntityDescription(
                 key="bridge_connection_strength",
-                name="OBI Bridge Connection Strength",
+                translation_key="bridge_connection_strength",
+                icon="mdi:transmission-tower",
                 entity_category=EntityCategory.DIAGNOSTIC,
             ),
         )
@@ -306,7 +310,7 @@ class ObiLastRecordReceivedSensor(ObiEnergyBaseEntity):
             entry,
             SensorEntityDescription(
                 key="last_record_received",
-                name="OBI Last Record Received",
+                translation_key="last_record_received",
                 device_class=SensorDeviceClass.TIMESTAMP,
                 entity_category=EntityCategory.DIAGNOSTIC,
             ),
