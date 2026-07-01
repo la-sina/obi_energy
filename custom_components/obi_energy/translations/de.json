@@ -66,5 +66,38 @@
         }
       }
     }
+  },
+  "entity": {
+    "sensor": {
+      "energy": {
+        "name": "Verbrauch"
+      },
+      "energy_kwh": {
+        "name": "Verbrauch (kWh)"
+      },
+      "negative_energy": {
+        "name": "Einspeisung"
+      },
+      "einspeisung_kwh": {
+        "name": "Einspeisung (kWh)"
+      },
+      "netto_energy_kwh": {
+        "name": "Netto (kWh)"
+      },
+      "bridge_battery": {
+        "name": "Bridge-Batterie"
+      },
+      "bridge_connection_strength": {
+        "name": "Bridge-Verbindungsstärke"
+      },
+      "last_record_received": {
+        "name": "Letzter Messwert empfangen"
+      }
+    },
+    "binary_sensor": {
+      "bridge_online": {
+        "name": "Bridge online"
+      }
+    }
   }
 }

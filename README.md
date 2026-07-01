@@ -64,10 +64,16 @@ reporting `0`, so your Energy Dashboard statistics stay accurate.
 
 ### HACS (custom repository)
 
-1. In HACS, add this repository as a custom repository (category:
-   Integration).
-2. Install "OBI Energy".
-3. Restart Home Assistant.
+This integration is not (yet) in the default HACS store, so it needs to be
+added as a **custom repository**:
+
+1. Open **HACS → Integrations** in Home Assistant.
+2. Click the **⋮** (three-dot) menu in the top right corner and choose
+   **Custom repositories**.
+3. Add this repository's URL (`https://github.com/karo-x/obi_energy`) and
+   select category **Integration**, then **Add**.
+4. Find **OBI Energy** in HACS and click **Download**.
+5. Restart Home Assistant.
 
 ### Manual
 
@@ -169,6 +175,21 @@ This is expected when the API returns no data for that measurement (rather
 than showing a misleading `0`, which would corrupt Energy Dashboard
 statistics). Check Home Assistant logs (enable debug logging in the
 integration options) for the underlying cause once it recovers.
+
+## Icon & branding
+
+This integration does **not** bundle an OBI/heyOBI logo — trademark and
+usage rights for OBI's branding are unclear for a community project, so no
+`icon.png`/`logo.png` is included. Entities instead use Home Assistant's
+built-in Material Design Icons (e.g. `mdi:transmission-tower` for the bridge
+connection-strength sensor); most other entities get a sensible default icon
+from their `device_class` (energy, battery, connectivity, timestamp). In the
+integrations list, Home Assistant/HACS will show a generic placeholder icon
+instead of a brand logo — this is expected and intentional.
+
+## Release notes
+
+See [CHANGELOG.md](CHANGELOG.md) for the version history.
 
 ## Security note
 

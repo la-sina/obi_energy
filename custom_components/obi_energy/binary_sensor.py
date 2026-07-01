@@ -43,14 +43,17 @@ class ObiBridgeOnlineBinarySensor(
         super().__init__(coordinator)
         self.entity_description = BinarySensorEntityDescription(
             key="bridge_online",
-            name="OBI Bridge Online",
+            translation_key="bridge_online",
             device_class=BinarySensorDeviceClass.CONNECTIVITY,
             entity_category=EntityCategory.DIAGNOSTIC,
         )
         self._attr_unique_id = f"{entry.entry_id}_bridge_online"
+        # Pin the entity_id to binary_sensor.obi_bridge_online, matching the
+        # documented name regardless of the translated entity name.
+        self._attr_suggested_object_id = "obi_bridge_online"
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, f"{coordinator.hh_id}_{coordinator.mid_id}")},
-            name="OBI Energy Bridge",
+            name="OBI Energy",
             manufacturer="OBI",
             model="heyOBI Energy Tracking",
         )
