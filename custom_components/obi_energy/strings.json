@@ -1,0 +1,70 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to OBI Energy",
+        "description": "Enter the email address and password you use for the heyOBI app. Your credentials are stored securely in Home Assistant's config entry storage, never in YAML, and are only used to obtain a session token.",
+        "data": {
+          "email": "OBI email",
+          "password": "OBI password"
+        }
+      },
+      "select_bridge": {
+        "title": "Select bridge and sensor",
+        "description": "Multiple OBI bridges/sensors were found on your account. Choose the one to monitor.",
+        "data": {
+          "bridge": "Bridge / sensor"
+        }
+      },
+      "manual": {
+        "title": "Enter bridge and sensor IDs manually",
+        "description": "The bridge list could not be retrieved automatically. Enter the household ID (HH_ID) and sensor ID (MID_ID) manually.",
+        "data": {
+          "hh_id": "Household ID (HH_ID)",
+          "mid_id": "Sensor ID (MID_ID)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate with OBI",
+        "description": "The stored OBI password for {email} no longer works. Enter the current password to continue.",
+        "data": {
+          "password": "OBI password"
+        }
+      },
+      "reconfigure_confirm": {
+        "title": "Update OBI credentials",
+        "description": "Update the OBI email and/or password used by this integration.",
+        "data": {
+          "email": "OBI email",
+          "password": "OBI password"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Login failed. Please check your OBI email and password.",
+      "cannot_connect": "Could not connect to the OBI servers. Please try again later.",
+      "invalid_ids": "No data could be found for the entered household/sensor ID."
+    },
+    "abort": {
+      "already_configured": "This bridge/sensor is already configured.",
+      "reauth_successful": "Re-authentication was successful.",
+      "reconfigure_successful": "The OBI credentials were updated successfully."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "OBI Energy options",
+        "description": "Configure how often data is fetched and refreshed.",
+        "data": {
+          "scan_interval": "Measurement scan interval (seconds)",
+          "login_refresh_interval": "Login refresh interval (seconds)",
+          "historical_duration": "Historical data duration (ISO 8601, e.g. PT6H)",
+          "debug": "Enable debug logging",
+          "hh_id": "Override household ID (HH_ID)",
+          "mid_id": "Override sensor ID (MID_ID)"
+        }
+      }
+    }
+  }
+}

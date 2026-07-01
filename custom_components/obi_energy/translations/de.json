@@ -1,0 +1,70 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Mit OBI Energy verbinden",
+        "description": "Gib die E-Mail-Adresse und das Passwort ein, die du auch für die heyOBI-App verwendest. Deine Zugangsdaten werden sicher im Config Entry von Home Assistant gespeichert, niemals in YAML, und nur verwendet, um ein Sitzungs-Token zu erhalten.",
+        "data": {
+          "email": "OBI E-Mail",
+          "password": "OBI Passwort"
+        }
+      },
+      "select_bridge": {
+        "title": "Bridge und Sensor auswählen",
+        "description": "Es wurden mehrere OBI-Bridges/Sensoren in deinem Konto gefunden. Wähle den aus, der überwacht werden soll.",
+        "data": {
+          "bridge": "Bridge / Sensor"
+        }
+      },
+      "manual": {
+        "title": "Bridge- und Sensor-ID manuell eingeben",
+        "description": "Die Bridge-Liste konnte nicht automatisch abgerufen werden. Gib die Haushalts-ID (HH_ID) und die Sensor-ID (MID_ID) manuell ein.",
+        "data": {
+          "hh_id": "Haushalts-ID (HH_ID)",
+          "mid_id": "Sensor-ID (MID_ID)"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Erneut bei OBI anmelden",
+        "description": "Das gespeicherte OBI-Passwort für {email} funktioniert nicht mehr. Gib das aktuelle Passwort ein, um fortzufahren.",
+        "data": {
+          "password": "OBI Passwort"
+        }
+      },
+      "reconfigure_confirm": {
+        "title": "OBI-Zugangsdaten aktualisieren",
+        "description": "Aktualisiere die von dieser Integration verwendete OBI E-Mail und/oder das Passwort.",
+        "data": {
+          "email": "OBI E-Mail",
+          "password": "OBI Passwort"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Anmeldung fehlgeschlagen. Bitte überprüfe E-Mail und Passwort.",
+      "cannot_connect": "Verbindung zu den OBI-Servern konnte nicht hergestellt werden. Bitte später erneut versuchen.",
+      "invalid_ids": "Für die eingegebene Haushalts-/Sensor-ID konnten keine Daten gefunden werden."
+    },
+    "abort": {
+      "already_configured": "Diese Bridge/dieser Sensor ist bereits konfiguriert.",
+      "reauth_successful": "Die erneute Anmeldung war erfolgreich.",
+      "reconfigure_successful": "Die OBI-Zugangsdaten wurden erfolgreich aktualisiert."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "OBI Energy Optionen",
+        "description": "Konfiguriere, wie oft Daten abgerufen und Zugangsdaten erneuert werden.",
+        "data": {
+          "scan_interval": "Abfrageintervall Messwerte (Sekunden)",
+          "login_refresh_interval": "Login-Refresh-Intervall (Sekunden)",
+          "historical_duration": "Zeitraum Messwerte (ISO 8601, z. B. PT6H)",
+          "debug": "Debug-Logging aktivieren",
+          "hh_id": "Haushalts-ID (HH_ID) überschreiben",
+          "mid_id": "Sensor-ID (MID_ID) überschreiben"
+        }
+      }
+    }
+  }
+}
