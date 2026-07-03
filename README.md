@@ -19,6 +19,9 @@ Every scan interval, the integration fetches:
   hardware version).
 - Historical meter measurements via `GET /historical-data/{hh_id}/{mid_id}/meter`
   for the `energy` and `negative_energy` measures.
+- Live readings via a WebSocket connection to OBI's live-mode endpoint. Incoming
+  messages currently provide the instantaneous `power`, `rssi`, and `battery`
+  values.
 
 ### `energy` vs. `negative_energy`
 
@@ -46,14 +49,20 @@ Assistant energy tooling — and the Energy Dashboard — expects kWh.
 | `sensor.obi_negative_energy` | Wh | energy | total_increasing |
 | `sensor.obi_einspeisung_kwh` | kWh | energy | total_increasing |
 | `sensor.obi_netto_energy_kwh` | kWh | energy | total (can be negative) |
+| `sensor.obi_live_power` | W | power | measurement |
+| `sensor.obi_live_rssi` | dBm | signal_strength | measurement |
+| `sensor.obi_live_battery` | % | battery | measurement |
+| `sensor.obi_live_last_message` | – | timestamp | – |
 | `sensor.obi_bridge_battery` | % | battery | – |
 | `binary_sensor.obi_bridge_online` | – | connectivity | – |
 | `sensor.obi_bridge_connection_strength` | – | – | – (text, e.g. `GOOD_CONNECTION`) |
 | `sensor.obi_last_record_received` | – | timestamp | – |
 
-The connection-strength sensor also carries diagnostic attributes: `hh_id`,
-`mid_id`, `upload_interval`, `firmware_version`, `hardware_version`. A full
-diagnostics dump is also available via **Settings → Devices & Services →
+The live power sensor reports the value sent by OBI's live stream directly in
+watts, so it can represent current consumption or feed-in depending on the sign
+used by OBI. The connection-strength sensor also carries diagnostic attributes:
+`hh_id`, `mid_id`, `upload_interval`, `firmware_version`, `hardware_version`. A
+full diagnostics dump is also available via **Settings → Devices & Services →
 OBI Energy → Download diagnostics**.
 
 If the API returns no data for a measurement (e.g. during a temporary

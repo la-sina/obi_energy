@@ -1,10 +1,14 @@
 """DataUpdateCoordinator for the OBI Energy integration."""
 from __future__ import annotations
 
+import asyncio
+import json
 import logging
-from dataclasses import dataclass
-from datetime import timedelta
+from dataclasses import dataclass, replace
+from datetime import datetime, timedelta, timezone
 from typing import Any
+
+import aiohttp
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -16,6 +20,8 @@ from .const import DOMAIN, MEASURE_ENERGY, MEASURE_NEGATIVE_ENERGY
 
 _LOGGER = logging.getLogger(__name__)
 
+_LIVE_RECONNECT_DELAY = 10
+
 
 @dataclass
 class ObiEnergyData:
@@ -25,6 +31,10 @@ class ObiEnergyData:
     energy: dict[str, Any] | None
     negative_energy: dict[str, Any] | None
     bridges_available: bool
+    live_power: int | float | None = None
+    live_rssi: int | None = None
+    live_battery: int | None = None
+    live_last_message_at: datetime | None = None
 
 
 def _latest_measurement(
@@ -66,6 +76,35 @@ class ObiEnergyCoordinator(DataUpdateCoordinator[ObiEnergyData]):
         self.hh_id = hh_id
         self.mid_id = mid_id
         self.historical_duration = historical_duration
+        self._live_task: asyncio.Task[None] | None = None
+        self._live_stop: asyncio.Event | None = None
+
+    async def async_start_live_updates(self) -> None:
+        """Start listening for live power readings."""
+        if self._live_task is not None and not self._live_task.done():
+            return
+        self._live_stop = asyncio.Event()
+        self._live_task = self.hass.async_create_task(
+            self._async_live_update_loop(),
+            name=f"{DOMAIN}_live_updates",
+        )
+
+    async def async_stop_live_updates(self) -> None:
+        """Stop the live-data listener."""
+        if self._live_stop is not None:
+            self._live_stop.set()
+
+        if self._live_task is None:
+            return
+
+        self._live_task.cancel()
+        try:
+            await self._live_task
+        except asyncio.CancelledError:
+            pass
+        finally:
+            self._live_task = None
+            self._live_stop = None
 
     async def _async_update_data(self) -> ObiEnergyData:
         """Fetch the latest bridge status and historical measurements."""
@@ -101,6 +140,7 @@ class ObiEnergyCoordinator(DataUpdateCoordinator[ObiEnergyData]):
 
         energy = _latest_measurement(historical, MEASURE_ENERGY)
         negative_energy = _latest_measurement(historical, MEASURE_NEGATIVE_ENERGY)
+        current_data = self.data
 
         _LOGGER.debug(
             "Historical data poll: %d record(s) returned; latest energy=%s "
@@ -117,4 +157,79 @@ class ObiEnergyCoordinator(DataUpdateCoordinator[ObiEnergyData]):
             energy=energy,
             negative_energy=negative_energy,
             bridges_available=bridges_available,
+            live_power=current_data.live_power if current_data else None,
+            live_rssi=current_data.live_rssi if current_data else None,
+            live_battery=current_data.live_battery if current_data else None,
+            live_last_message_at=current_data.live_last_message_at
+            if current_data
+            else None,
+        )
+
+    async def _async_live_update_loop(self) -> None:
+        """Maintain the live WebSocket connection and publish incoming readings."""
+        assert self._live_stop is not None
+
+        while not self._live_stop.is_set():
+            try:
+                websocket = await self.client.async_connect_live_data(
+                    self.hh_id, self.mid_id
+                )
+                _LOGGER.debug("OBI live WebSocket connected")
+                try:
+                    async for msg in websocket:
+                        if self._live_stop.is_set():
+                            break
+                        if msg.type == aiohttp.WSMsgType.TEXT:
+                            self._handle_live_message(msg.data)
+                        elif msg.type == aiohttp.WSMsgType.ERROR:
+                            _LOGGER.warning(
+                                "OBI live WebSocket error: %s", websocket.exception()
+                            )
+                            break
+                finally:
+                    await websocket.close()
+            except ObiAuthError as err:
+                _LOGGER.warning("OBI live WebSocket authentication failed: %s", err)
+            except ObiApiError as err:
+                _LOGGER.warning("OBI live WebSocket connection failed: %s", err)
+            except asyncio.CancelledError:
+                raise
+            except Exception:
+                _LOGGER.exception("Unexpected error in OBI live WebSocket listener")
+
+            if not self._live_stop.is_set():
+                try:
+                    await asyncio.wait_for(
+                        self._live_stop.wait(), timeout=_LIVE_RECONNECT_DELAY
+                    )
+                except asyncio.TimeoutError:
+                    pass
+
+    def _handle_live_message(self, raw_message: str) -> None:
+        """Update coordinator data from a live WebSocket JSON message."""
+        try:
+            message = json.loads(raw_message)
+        except ValueError:
+            _LOGGER.debug("Ignoring invalid OBI live WebSocket message")
+            return
+
+        if not isinstance(message, dict) or message.get("event") != "mqttMessage":
+            return
+
+        payload = message.get("data")
+        if not isinstance(payload, dict):
+            return
+
+        current_data = self.data
+        if current_data is None:
+            return
+
+        self.async_set_updated_data(
+            replace(
+                current_data,
+                live_power=payload.get("power", current_data.live_power),
+                live_rssi=payload.get("rssi", current_data.live_rssi),
+                live_battery=payload.get("battery", current_data.live_battery),
+                live_last_message_at=datetime.now(timezone.utc),
+            )
         )

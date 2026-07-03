@@ -46,4 +46,12 @@ async def async_get_config_entry_diagnostics(
         },
         "energy": data.energy if data else None,
         "negative_energy": data.negative_energy if data else None,
+        "live": {
+            "power": data.live_power if data else None,
+            "rssi": data.live_rssi if data else None,
+            "battery": data.live_battery if data else None,
+            "last_message_at": data.live_last_message_at.isoformat()
+            if data and data.live_last_message_at
+            else None,
+        },
     }

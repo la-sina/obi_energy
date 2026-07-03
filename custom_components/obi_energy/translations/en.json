@@ -84,6 +84,18 @@
       "netto_energy_kwh": {
         "name": "Net (kWh)"
       },
+      "live_power": {
+        "name": "Live power"
+      },
+      "live_rssi": {
+        "name": "Live RSSI"
+      },
+      "live_battery": {
+        "name": "Live battery"
+      },
+      "live_last_message": {
+        "name": "Last live message"
+      },
       "bridge_battery": {
         "name": "Bridge battery"
       },

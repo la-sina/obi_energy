@@ -26,6 +26,8 @@ from .const import (
     LOGIN_ORIGIN,
     LOGIN_REFERER,
     LOGIN_URL,
+    LIVE_DATA_URL,
+    LIVE_USER_AGENT,
     USER_AGENT,
 )
 
@@ -325,3 +327,80 @@ class ObiApiClient:
             )
             raise ObiConnectionError("Unexpected response format for historical data")
         return data
+
+    async def async_connect_live_data(
+        self, hh_id: str, mid_id: str
+    ) -> aiohttp.ClientWebSocketResponse:
+        """Open the live-data WebSocket for the given bridge/sensor."""
+        await self._ensure_logged_in()
+
+        params = {
+            "bridgeId": hh_id,
+            "sensorId": mid_id,
+        }
+        headers = {
+            "Authorization": f"Bearer {self._token}",
+            "Accept": "*/*",
+            "Accept-Language": ACCEPT_LANGUAGE,
+            "User-Agent": LIVE_USER_AGENT,
+            "X-Platform": "iOS",
+            "X-Lib-Version": "26.6.9",
+        }
+
+        for attempt in range(2):
+            try:
+                return await self._session.ws_connect(
+                    LIVE_DATA_URL,
+                    params=params,
+                    headers=headers,
+                    timeout=_REQUEST_TIMEOUT,
+                    heartbeat=30,
+                )
+            except aiohttp.WSServerHandshakeError as err:
+                if err.status == 401 and attempt == 0:
+                    _LOGGER.debug(
+                        "OBI live WebSocket returned 401, refreshing token and retrying"
+                    )
+                    await self.async_login()
+                    headers["Authorization"] = f"Bearer {self._token}"
+                    continue
+                if err.status in (401, 403):
+                    _LOGGER.error(
+                        "OBI live WebSocket authorization failed with HTTP %s",
+                        err.status,
+                    )
+                    raise ObiAuthError(
+                        f"Live WebSocket authorization failed with HTTP {err.status}"
+                    ) from err
+                _LOGGER.error(
+                    "OBI live WebSocket handshake failed with HTTP %s",
+                    err.status,
+                )
+                raise ObiConnectionError(
+                    f"Live WebSocket handshake failed with HTTP {err.status}"
+                ) from err
+            except aiohttp.ClientConnectorDNSError as err:
+                _LOGGER.error("DNS resolution failed for OBI live WebSocket: %s", err)
+                raise ObiConnectionError(
+                    "DNS resolution failed for the OBI live WebSocket endpoint"
+                ) from err
+            except aiohttp.ClientSSLError as err:
+                _LOGGER.error("SSL/TLS error on OBI live WebSocket: %s", err)
+                raise ObiConnectionError(
+                    "SSL/TLS error while connecting to the OBI live WebSocket endpoint"
+                ) from err
+            except (asyncio.TimeoutError, aiohttp.ServerTimeoutError) as err:
+                _LOGGER.error("Timeout connecting to OBI live WebSocket: %s", err)
+                raise ObiConnectionError(
+                    "Timeout while connecting to the OBI live WebSocket endpoint"
+                ) from err
+            except aiohttp.ClientConnectorError as err:
+                _LOGGER.error("Could not connect to OBI live WebSocket: %s", err)
+                raise ObiConnectionError(
+                    "Could not connect to the OBI live WebSocket endpoint"
+                ) from err
+            except aiohttp.ClientError as err:
+                _LOGGER.error("Network error on OBI live WebSocket: %s", err)
+                raise ObiConnectionError("Network error during OBI live WebSocket") from err
+
+        raise ObiAuthError("Live WebSocket was not authorized after refreshing token")
