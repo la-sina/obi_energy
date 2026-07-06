@@ -60,7 +60,13 @@ def _latest_measurement(
     ]
     if not matching:
         return None
-    return max(matching, key=lambda record: record.get("timestamp") or "")
+    return max(matching, key=_measurement_time)
+
+
+def _measurement_time(record: dict[str, Any]) -> str:
+    """Return the timestamp field used by OBI historical-data responses."""
+    timestamp = record.get("time") or record.get("timestamp")
+    return timestamp if isinstance(timestamp, str) else ""
 
 
 class ObiEnergyCoordinator(DataUpdateCoordinator[ObiEnergyData]):
@@ -174,9 +180,9 @@ class ObiEnergyCoordinator(DataUpdateCoordinator[ObiEnergyData]):
             "Historical data poll: %d record(s) returned; latest energy=%s "
             "(value=%s); latest negative_energy=%s (value=%s)",
             len(historical),
-            energy.get("timestamp") if energy else None,
+            _measurement_time(energy) if energy else None,
             energy.get("value") if energy else None,
-            negative_energy.get("timestamp") if negative_energy else None,
+            _measurement_time(negative_energy) if negative_energy else None,
             negative_energy.get("value") if negative_energy else None,
         )
 
