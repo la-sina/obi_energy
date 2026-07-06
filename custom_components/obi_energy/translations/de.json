@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Mit OBI Energy verbinden",
-        "description": "Gib die E-Mail-Adresse und das Passwort ein, die du auch für die heyOBI-App verwendest. Deine Zugangsdaten werden sicher im Config Entry von Home Assistant gespeichert, niemals in YAML, und nur verwendet, um ein Sitzungs-Token zu erhalten.",
+        "description": "Gib die E-Mail-Adresse und das Passwort ein, die du auch für die heyOBI-App verwendest. Deine Zugangsdaten werden sicher im Config Entry von Home Assistant gespeichert, niemals in YAML, und nur verwendet, um ein Sitzungs-Token zu erhalten. Nach dem Setup kannst du über \"Configure\" das Abfrageintervall und den Zeitraum der Messwerte anpassen.",
         "data": {
           "email": "OBI E-Mail",
           "password": "OBI Passwort"
