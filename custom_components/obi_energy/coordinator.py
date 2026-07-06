@@ -101,6 +101,7 @@ class ObiEnergyCoordinator(DataUpdateCoordinator[ObiEnergyData]):
             if live_enabled
             else LIVE_UPLOAD_INTERVAL_DISABLED
         )
+        self._entry = entry
         self._live_task: asyncio.Task[None] | None = None
         self._live_stale_task: asyncio.Task[None] | None = None
         self._live_stop: asyncio.Event | None = None
@@ -115,11 +116,13 @@ class ObiEnergyCoordinator(DataUpdateCoordinator[ObiEnergyData]):
         if self._live_task is not None and not self._live_task.done():
             return
         self._live_stop = asyncio.Event()
-        self._live_task = self.hass.async_create_task(
+        self._live_task = self._entry.async_create_background_task(
+            self.hass,
             self._async_live_update_loop(),
             name=f"{DOMAIN}_live_updates",
         )
-        self._live_stale_task = self.hass.async_create_task(
+        self._live_stale_task = self._entry.async_create_background_task(
+            self.hass,
             self._async_live_stale_watchdog(),
             name=f"{DOMAIN}_live_stale_watchdog",
         )
