@@ -21,7 +21,6 @@ from .const import DOMAIN, MEASURE_ENERGY, MEASURE_NEGATIVE_ENERGY
 _LOGGER = logging.getLogger(__name__)
 
 _LIVE_RECONNECT_DELAY = 10
-_LIVE_UPLOAD_INTERVAL = 2
 _LIVE_STALE_AFTER = timedelta(seconds=90)
 _LIVE_STALE_CHECK_INTERVAL = 15
 
@@ -70,6 +69,8 @@ class ObiEnergyCoordinator(DataUpdateCoordinator[ObiEnergyData]):
         mid_id: str,
         update_interval: int,
         historical_duration: str,
+        live_enabled: bool,
+        live_upload_interval: int,
     ) -> None:
         """Initialize the coordinator."""
         super().__init__(
@@ -83,6 +84,8 @@ class ObiEnergyCoordinator(DataUpdateCoordinator[ObiEnergyData]):
         self.hh_id = hh_id
         self.mid_id = mid_id
         self.historical_duration = historical_duration
+        self.live_enabled = live_enabled
+        self.live_upload_interval = live_upload_interval
         self._live_task: asyncio.Task[None] | None = None
         self._live_stale_task: asyncio.Task[None] | None = None
         self._live_stop: asyncio.Event | None = None
@@ -352,7 +355,7 @@ class ObiEnergyCoordinator(DataUpdateCoordinator[ObiEnergyData]):
     async def _async_enable_live_mode(self) -> None:
         """Ask the OBI backend to make the sensor publish live readings."""
         sensor = await self.client.async_set_sensor_upload_interval(
-            self.mid_id, _LIVE_UPLOAD_INTERVAL
+            self.mid_id, self.live_upload_interval
         )
         upload_interval = sensor.get("uploadInterval")
         _LOGGER.debug(
@@ -369,7 +372,7 @@ class ObiEnergyCoordinator(DataUpdateCoordinator[ObiEnergyData]):
                 sensor_info=sensor,
                 live_upload_interval=upload_interval
                 if isinstance(upload_interval, int)
-                else _LIVE_UPLOAD_INTERVAL,
+                else self.live_upload_interval,
                 live_last_error=None,
             )
         )

@@ -32,6 +32,10 @@ async def async_get_config_entry_diagnostics(
         "hh_id": coordinator.hh_id,
         "mid_id": coordinator.mid_id,
         "historical_duration": coordinator.historical_duration,
+        "live_options": {
+            "enabled": coordinator.live_enabled,
+            "upload_interval": coordinator.live_upload_interval,
+        },
         "last_update_success": coordinator.last_update_success,
         "bridge_reachable": data.bridges_available if data else None,
         "sensor_info": {

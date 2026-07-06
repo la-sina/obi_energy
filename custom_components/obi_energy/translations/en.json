@@ -60,6 +60,8 @@
           "scan_interval": "Measurement scan interval (seconds)",
           "login_refresh_interval": "Login refresh interval (seconds)",
           "historical_duration": "Historical data duration (ISO 8601, e.g. PT6H)",
+          "live_enabled": "Enable live tracking",
+          "live_upload_interval": "Live upload interval (seconds, default: 2)",
           "debug": "Enable debug logging",
           "hh_id": "Override household ID (HH_ID)",
           "mid_id": "Override sensor ID (MID_ID)"

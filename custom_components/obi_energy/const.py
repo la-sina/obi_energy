@@ -8,12 +8,16 @@ CONF_HH_ID = "hh_id"
 CONF_MID_ID = "mid_id"
 CONF_HISTORICAL_DURATION = "historical_duration"
 CONF_LOGIN_REFRESH_INTERVAL = "login_refresh_interval"
+CONF_LIVE_ENABLED = "live_enabled"
+CONF_LIVE_UPLOAD_INTERVAL = "live_upload_interval"
 CONF_DEBUG = "debug"
 
 # Defaults
 DEFAULT_SCAN_INTERVAL = 60  # seconds
 DEFAULT_LOGIN_REFRESH_INTERVAL = 55 * 60  # seconds
 DEFAULT_HISTORICAL_DURATION = "PT6H"
+DEFAULT_LIVE_ENABLED = True
+DEFAULT_LIVE_UPLOAD_INTERVAL = 2  # seconds
 DEFAULT_DEBUG = False
 
 # API
