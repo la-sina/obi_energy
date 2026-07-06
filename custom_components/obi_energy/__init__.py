@@ -76,8 +76,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     if live_enabled:
         await coordinator.async_start_live_updates()
-    else:
-        await coordinator.async_disable_live_mode()
     entry.async_on_unload(entry.add_update_listener(_async_update_listener))
 
     return True
