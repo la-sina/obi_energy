@@ -113,7 +113,10 @@ After setup, click **Configure** on the integration to adjust:
 - **Measurement scan interval** (default: 60 seconds)
 - **Login refresh interval** (default: 55 minutes) — how often the session
   token is proactively renewed, independent of the 401-triggered refresh
-- **Historical data duration** (default: `PT6H`, ISO 8601 duration)
+- **Historical data duration** (default: `PT15M`, ISO 8601 duration) — keep
+  this small. Larger windows (e.g. `PT6H`) have been observed in practice to
+  make OBI's API return older data instead of the latest reading, causing
+  the energy sensors to appear stuck.
 - **Debug logging**
 - **Manual `HH_ID` / `MID_ID` overrides** (useful if `/bridges` starts
   failing after setup)

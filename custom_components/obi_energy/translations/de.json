@@ -55,11 +55,11 @@
     "step": {
       "init": {
         "title": "OBI Energy Optionen",
-        "description": "Konfiguriere, wie oft Daten abgerufen und Zugangsdaten erneuert werden.",
+        "description": "Konfiguriere, wie oft Daten abgerufen und Zugangsdaten erneuert werden. Halte den Zeitraum für Messwerte klein (z. B. PT15M) - bei größeren Zeitfenstern (z. B. PT6H) liefert OBIs API teils ältere Werte statt der aktuellsten Messung.",
         "data": {
           "scan_interval": "Abfrageintervall Messwerte (Sekunden)",
           "login_refresh_interval": "Login-Refresh-Intervall (Sekunden)",
-          "historical_duration": "Zeitraum Messwerte (ISO 8601, z. B. PT6H)",
+          "historical_duration": "Zeitraum Messwerte (ISO 8601, z. B. PT15M)",
           "debug": "Debug-Logging aktivieren",
           "hh_id": "Haushalts-ID (HH_ID) überschreiben",
           "mid_id": "Sensor-ID (MID_ID) überschreiben"
