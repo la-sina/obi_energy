@@ -55,11 +55,11 @@
     "step": {
       "init": {
         "title": "OBI Energy options",
-        "description": "Configure how often data is fetched and refreshed.",
+        "description": "Configure how often data is fetched and refreshed. Keep the historical data duration small (e.g. PT15M) - larger windows (like PT6H) have been observed to make OBI's API return older data instead of the latest reading.",
         "data": {
           "scan_interval": "Measurement scan interval (seconds)",
           "login_refresh_interval": "Login refresh interval (seconds)",
-          "historical_duration": "Historical data duration (ISO 8601, e.g. PT6H)",
+          "historical_duration": "Historical data duration (ISO 8601, e.g. PT15M)",
           "debug": "Enable debug logging",
           "hh_id": "Override household ID (HH_ID)",
           "mid_id": "Override sensor ID (MID_ID)"

@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.1.2
+
+Reduces the default `historical_duration` from `PT6H` to `PT15M`.
+
+Community testing (see the OBI Energy Tracker thread on photovoltaikforum.de)
+found that a large historical-data window like `PT6H` can make OBI's API
+return older data instead of the latest reading, even with the v0.1.1 fix
+applied — the symptom looks identical to issue #10 but is caused by the
+window size itself, not the request format. Users who already changed
+`historical_duration` in the options manually are unaffected; this only
+changes the out-of-the-box default for new setups. The options description
+now also documents this tradeoff directly in the UI.
+
 ## v0.1.1
 
 Fixes #10 (energy/negative_energy measurements stop updating even though
